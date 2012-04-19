@@ -121,7 +121,7 @@ class UploadUsers {
 		$users = array();
 
 		/// Go through the user rows
-		for ($i = 1; $i < count($rows) - 1; $i++) {
+		for ($i = 1; $i < count($rows); $i++) {
 			$rows[$i] = trim($rows[$i]);
 			if (empty($rows[$i])) {
 				continue;
@@ -134,7 +134,7 @@ class UploadUsers {
 			/// Go through user information
 			foreach ($user_details as $key => $field) {
 				$fieldname = trim($headers[$key]); /// Remove whitespaces
-				$field = trim($field);	  /// and other garbage.
+				$field = trim($field);   /// and other garbage.
 
 				if ($fieldname == 'username' ||
 						$fieldname == 'name' ||
@@ -229,14 +229,28 @@ class UploadUsers {
 		global $CONFIG;
 		$final_report = array(); /// Final report of the creation process
 
-		$this->headers = explode(',', $post_data['header']);
+		foreach ($post_data['header'] as $header => $mapping) {
+			$metadata_name = $mapping['mapping'];
+			if ($metadata_name == 'custom') {
+				$metadata_name = $mapping['custom'];
+			}
+			$mapped_headers[$header] = $metadata_name;
+		}
+		$this->headers = $mapped_headers;
 
 		/// Create the users from the $users array
 		for ($i = 0; $i < $post_data['num_of_users']; $i++) {
+			$user = array();
 			/// Get the user details from POST data for all headers
-			foreach ($this->headers as $header) {
-				$user[$header] = $post_data[$header][$i];
+
+			foreach ($this->headers as $header => $metadata_name) {
+				if ($value = $post_data[$header][$i]) {
+					$user[$metadata_name] = $value;
+				} else {
+					unset($user[$metadata_name]);
+				}
 			}
+
 
 			/// Add the basic fields to the report
 			$report = array('username' => $user['username'],
@@ -255,27 +269,40 @@ class UploadUsers {
 
 					//$new_user->user_role = 'student';
 					/// Add all other fields as metadata
-					foreach ($this->headers as $header) {
-						if ($header == 'username' ||
-								$header == 'password' ||
-								$header == 'name' ||
-								$header == 'email') {
-							continue;
-						}
+					foreach ($this->headers as $header => $metadata_name) {
+						switch ($metadata_name) {
+							case 'username' :
+							case 'password' :
+							case 'name' :
+							case 'email' :
+								continue;
+								break;
 
-						/// Metadata could be a comma separated list if the delimiter is something else than a comma
-						if ($this->delimiter != ',' && strpos($user[$header], ',')) {
-							/// Multiple tags found
-							$tags = string_to_tag_array($user[$header]);
-							foreach ($tags as $tag) {
-								create_metadata($guid, $header, $tag, 'text', $guid, ACCESS_PRIVATE, true);
-							}
-						} else {
-							create_metadata($guid, $header, $user[$header], 'text', $guid);
-						}
+							default :
+								$hook_params = array(
+									'header' => $header,
+									'metadata_name' => $metadata_name,
+									'value' => $user[$metadata_name],
+									'user' => $new_user
+								);
+								if (elgg_trigger_plugin_hook('header:custom_method', 'upload_users', $hook_params, false)) {
+									continue;
+								}
 
+								/// Metadata could be a comma separated list if the delimiter is something else than a comma
+								if ($this->delimiter != ',' && strpos($user[$metadata_name], ',')) {
+									/// Multiple tags found
+									$tags = string_to_tag_array($user[$metadata_name]);
+									foreach ($tags as $tag) {
+										create_metadata($guid, $metadata_name, $tag, 'text', $guid, ACCESS_PRIVATE, true);
+									}
+								} else {
+									create_metadata($guid, $metadata_name, $user[$metadata_name], 'text', $guid);
+								}
+								break;
+						}
 						/// Add this metadata field to the report
-						$report[$header] = $user[$header];
+						$report[$metadata_name] = $user[$metadata_name];
 					}
 
 					/// Add status message to the report

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Upload users creation report view. Prints a nice table of all the created users.
  *
@@ -9,51 +8,48 @@
  * @copyright Mediamaisteri Group 2009
  * @link http://www.mediamaisteri.com/
  */
-
 $headers = $vars['headers'];
-$report  = $vars['report'];
-
-
+$report = $vars['report'];
 ?>
 <div class="upload_users_container">
-<ul>
-<li><?php echo elgg_echo('upload_users:number_of_accounts'); ?>: <?php echo count($report); ?></li>
-<li><?php echo elgg_echo('upload_users:number_of_errors'); ?>: <?php echo $vars['num_of_failed']; ?></li>
-</ul>
+	<ul>
+		<li><?php echo elgg_echo('upload_users:number_of_accounts'); ?>: <?php echo count($report); ?></li>
+		<li><?php echo elgg_echo('upload_users:number_of_errors'); ?>: <?php echo $vars['num_of_failed']; ?></li>
+	</ul>
 </div>
 
-<?php 
-if($report){
-?>
-<table id="creation_report">
-<thead>
-<?php 
+<?php
+if ($report) {
+	?>
+	<div class="creation_report_wrapper">
+		<table id="creation_report">
+			<thead>
+	<?php
 /// Print the headers
-foreach($headers as $header){
-	echo '<td>' . $header . '</td>';
-}
-?>
-
-</thead>
-
-<?php 
-/// Print the data
-foreach($report as $row){
-	echo '<tr>';
-	foreach($headers as $header){
-		echo '<td>' . $row[$header] . '</td>';
+	foreach ($headers as $header) {
+		echo '<td>' . $header . '</td>';
 	}
-	echo '</tr>';
-}
+	?>
 
-?>
+			</thead>
 
-</table>
+				<?php
+/// Print the data
+				foreach ($report as $row) {
+					echo '<tr>';
+					foreach ($headers as $header) {
+						echo '<td>' . $row[$header] . '</td>';
+					}
+					echo '</tr>';
+				}
+				?>
 
-<?php 
-}else{ /// ENDIF $report
-	echo elgg_echo('upload_users:no_created_users');	
-}
-?>
+		</table>
+	</div>
+			<?php
+		} else { /// ENDIF $report
+			echo elgg_echo('upload_users:no_created_users');
+		}
+		?>
 
 

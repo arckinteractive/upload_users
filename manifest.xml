@@ -3,7 +3,7 @@
 	<name>User Import</name>
 	<author>Jaakko Naakka / Mediamaisteri Group</author>
 	<author>Upgraded to 1.8 by Ismayil Khayredinov / Arck Interactive</author>
-	<version>1.8</version>
+	<version>1.8.1</version>
 	<category>users</category>
 	<description>Create user accounts from a CSV file.
 	Upgraded to 1.8 by Ismayil Khayredinov for Arck Interactive
@@ -15,5 +15,13 @@
 		<type>elgg_release</type>
 		<version>1.8</version>
 	</requires>
+	<suggests>
+		<type>plugin</type>
+		<name>profile_manager</name>
+	</suggests>
+	<suggests>
+		<type>plugin</type>
+		<name>roles</name>
+	</suggests>
 	<activate_on_install>true</activate_on_install>
 </plugin_manifest>

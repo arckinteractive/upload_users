@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Upload users. Processes the uploaded file and prints a report of the cerated files.
  *
@@ -8,16 +9,15 @@
  * @copyright Mediamaisteri Group 2009
  * @link http://www.mediamaisteri.com/
  */
-
 $upload = new UploadUsers();
 
 elgg_push_context('admin');
 
 /// Get the input from the form or hidden fields
-$encoding  = get_input('encoding');
+$encoding = get_input('encoding');
 $delimiter = get_input('delimiter');
 $notification = get_input('notification');
-$confirm   = get_input('confirm', false);
+$confirm = get_input('confirm', false);
 
 /// Set the parameters
 $upload->setEncoding($encoding);
@@ -25,14 +25,14 @@ $upload->setDelimiter($delimiter);
 $upload->setNotification($notification);
 
 
-if(!$confirm) {
+if (!$confirm) {
 	/// Open the file
-	if(! $upload->openFile('csvfile')){
+	if (!$upload->openFile('csvfile')) {
 		forward("admin/users/upload");
 	}
 
 	/// Process the file
-	if(! $upload->processFile()){
+	if (!$upload->processFile()) {
 		forward("admin/users/upload");
 	}
 
@@ -42,7 +42,7 @@ if(!$confirm) {
 	$body = $upload->getConfirmationReport();
 	$title = elgg_view_title(elgg_echo('upload_users:process_report'));
 /// Create the users and print the report
-}else{
+} else {
 	/// Create the users
 	$upload->createUsers($_POST);
 	/// Everything was fine -> Display the creation report

@@ -18,11 +18,24 @@
 
 }
 
+.creation_report_wrapper {
+	width:100%;
+	overflow:auto;
+}
+
 #creation_report {
 	margin: 10px 10px 10px 10px;
 	background-color: white;
-	width: 90%;
+	width: auto;
 	border: 1px dotted black;
+}
+
+#creation_report input {
+	font-size:11px;
+	line-height:12px;
+	padding:2%;
+	margin:2%;
+	width:90%;
 }
 
 #creation_report td {
@@ -32,7 +45,7 @@
 
 #creation_report thead td {
 	background-color: gray;
-	font-size: 14px;
+	font-size: 11px;
 	font-weight: bold;
 }
 
@@ -43,4 +56,8 @@
 
 .code {
 	font-family: courier;
+}
+
+.hidden {
+	display:none;
 }

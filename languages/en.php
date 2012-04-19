@@ -59,6 +59,11 @@ Go to address %s to login.
 ',
 'upload_users:email:subject' => 'Your user account for %s',
 
+
+/* MISC */
+
+'upload_users:mapping:custom' => 'custom ...',
+	
 );
 
 add_translation("en",$english);

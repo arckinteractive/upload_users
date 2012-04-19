@@ -9,16 +9,16 @@
  * @copyright Mediamaisteri Group 2009
  * @link http://www.mediamaisteri.com/
  */
-
 ?>
 <?php echo elgg_echo('upload_users:upload_help'); ?>
 <p class="code">
-username; password; email; name; location; interests<br>
-test_user; t3st; test@test.com; Test User; Helsinki; Elgg, php, jquery Web 2.0<br>
-user_test; testing; testing@test.com; User for Testing; London; Moodle, e-learning, photography<br>
+	username; password; email; name; location; interests<br>
+	test_user; t3st; test@test.com; Test User; Helsinki; Elgg, php, jquery Web 2.0<br>
+	user_test; testing; testing@test.com; User for Testing; London; Moodle, e-learning, photography<br>
 </p>
 
-<?php 
+<?php
+
 /// Diaplay the file selction
 echo '<h4>' . elgg_echo('upload_users:choose_file') . '</h4>';
 echo elgg_view('input/file', array('name' => 'csvfile'));
