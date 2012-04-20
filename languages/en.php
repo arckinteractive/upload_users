@@ -16,7 +16,11 @@ $english = array(
 'upload_users:choose_file' => 'Choose file',
 'upload_users:encoding' => 'Choose encoding',
 'upload_users:delimiter' => 'Choose delimiter',
+'upload_users:record_limit' => 'Maximum number of rows to import (0 = all)',
+'upload_users:record_offset' => 'Offset from first row',
 'upload_users:send_email' => 'Send email to new users',
+'upload_users:mapping_template' => 'Select an existing header mapping template',
+'upload_users:save_as_template' => 'Enter a new name to save header mapping as a template',
 'upload_users:yes' => 'Yes',
 'upload_users:no' => 'No',
 

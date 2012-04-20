@@ -18,12 +18,20 @@ $encoding = get_input('encoding');
 $delimiter = get_input('delimiter');
 $notification = get_input('notification');
 $confirm = get_input('confirm', false);
+$limit = (int)get_input('limit', 0);
+$offset = (int)get_input('offset', 0);
+$template = get_input('template');
 
 /// Set the parameters
 $upload->setEncoding($encoding);
 $upload->setDelimiter($delimiter);
 $upload->setNotification($notification);
+$upload->setLimit($limit);
+$upload->setOffset($offset);
 
+if ($template && $template !== 'new') {
+	$upload->setTemplate($template);
+}
 
 if (!$confirm) {
 	/// Open the file

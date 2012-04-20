@@ -45,6 +45,10 @@ if (elgg_is_active_plugin('roles')) {
 		}
 	}
 }
+
+if ($template = elgg_extract('template', $vars, false)) {
+	$template_mapping = json_decode(elgg_get_plugin_setting($template, 'upload_users'), true);
+}
 ?>
 
 
@@ -60,6 +64,8 @@ if (elgg_is_active_plugin('roles')) {
 <input type="hidden" name="notification" id="notificaiton" value="<?php echo $vars['notification']; ?>">
 <input type="hidden" name="encoding" id="encoding" value="<?php echo $vars['encoding']; ?>">
 <input type="hidden" name="delimiter" id="delimiter" value="<?php echo $vars['delimiter']; ?>">
+<input type="hidden" name="limit" id="limit" value = "<?php echo $vars['limit'] ?>">
+<input type="hidden" name="offset" id="offset" value = "<?php echo $vars['offset'] ?>">
 
 <div class="creation_report_wrapper">
 	<table id="creation_report">
@@ -77,41 +83,54 @@ if (elgg_is_active_plugin('roles')) {
 			/// Print the headers
 			foreach ($headers as $header) {
 				echo '<td>';
-				if ($header == 'status') {
+				if ($header == 'upload_users_status') {
 					echo elgg_view('input/hidden', array(
-					'name' => 'header[status][mapping]',
-					'value' => 'status'
+						'name' => 'header[status][mapping]',
+						'value' => 'upload_users_status'
 					));
 					continue;
 				}
-				if (is_array($mapping_options)) {
-					if (array_key_exists($header, $mapping_options)) {
-						$mapping_value = $header;
-						$custom_input_class = 'hidden';
-					} else {
-						$mapping_value = null;
-						$custom_input_class = '';
-					}
-					echo elgg_view('input/dropdown', array(
-						'name' => "header[$header][mapping]",
-						'options_values' => $mapping_options,
-						'value' => $mapping_value
-					));
+				if (!$template_mapping) {
+					if (is_array($mapping_options)) {
+						if (array_key_exists($header, $mapping_options)) {
+							$mapping_value = $header;
+							$custom_input_class = 'hidden';
+						} else {
+							$mapping_value = null;
+							$custom_input_class = '';
+						}
+						echo elgg_view('input/dropdown', array(
+							'name' => "header[$header][mapping]",
+							'options_values' => $mapping_options,
+							'value' => $mapping_value
+						));
 
-					echo elgg_view('input/text', array(
-						'name' => "header[$header][custom]",
-						'value' => $header,
-						'class' => $custom_input_class
-					));
+						echo elgg_view('input/text', array(
+							'name' => "header[$header][custom]",
+							'value' => $header,
+							'class' => $custom_input_class
+						));
+					} else {
+						echo elgg_view('input/hidden', array(
+							'name' => "header[$header][mapping]",
+							'value' => "custom"
+						));
+
+						echo elgg_view('input/text', array(
+							'name' => "header[$header][custom]",
+							'value' => $header
+						));
+					}
 				} else {
+					echo $template_mapping[$header];
 					echo elgg_view('input/hidden', array(
 						'name' => "header[$header][mapping]",
 						'value' => "custom"
 					));
 
-					echo elgg_view('input/text', array(
+					echo elgg_view('input/hidden', array(
 						'name' => "header[$header][custom]",
-						'value' => $header
+						'value' => $template_mapping[$header]
 					));
 				}
 				echo '</td>';
@@ -136,7 +155,7 @@ if (elgg_is_active_plugin('roles')) {
 			foreach ($headers as $header) {
 				echo '<td>';
 				if ($report[$i]['create_user']) {
-					if ($header !== 'status') {
+					if ($header !== 'upload_users_status') {
 						echo elgg_view('input/text', array(
 							'name' => "{$header}[]",
 							'value' => $report[$i][$header]
@@ -152,6 +171,11 @@ if (elgg_is_active_plugin('roles')) {
 		?>
 	</table>
 </div>
+
+<?php
+echo '<h4>' . elgg_echo('upload_users:save_as_template') . '</h4>';
+echo elgg_view('input/text', array('name' => 'template', 'value' => $vars['template']));
+?>
 <?php echo elgg_view('input/securitytoken') ?>
 <?php echo elgg_view('input/submit', array('value' => elgg_echo('upload_users:create_users'))); ?>
 
