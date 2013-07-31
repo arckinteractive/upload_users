@@ -10,6 +10,7 @@
  */
 $headers = $vars['headers'];
 $report = $vars['report'];
+$failures = $vars['failures'];
 ?>
 <div class="upload_users_container">
 	<ul>
@@ -46,7 +47,39 @@ if ($report) {
 
 		</table>
 	</div>
+
+
+<?php
+    if ($failures) {
+?>
+<div class="creation_report_wrapper">
+		<table id="creation_report_failures">
+			<thead>
+	<?php
+/// Print the headers
+    $headers[] = 'error_msg';
+	foreach ($headers as $header) {
+		echo '<td>' . $header . '</td>';
+	}
+	?>
+
+			</thead>
+
+				<?php
+/// Print the data
+				foreach ($failures as $row) {
+					echo '<tr>';
+					foreach ($headers as $header) {
+						echo '<td>' . $row[$header] . '</td>';
+					}
+					echo '</tr>';
+				}
+				?>
+
+		</table>
+	</div>
 			<?php
+} // end failures
 		} else { /// ENDIF $report
 			echo elgg_echo('upload_users:no_created_users');
 		}
