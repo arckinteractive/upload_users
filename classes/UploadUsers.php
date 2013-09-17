@@ -18,6 +18,10 @@ class UploadUsers {
 	var $confirmation_report;
 	var $creation_report;
 	var $headers;
+	var $mapped_headers;
+	var $template;
+	var $limit;
+	var $offset;
 	var $number_of_failed_users = 0;
 	var $users_to_confirm = NULL; /// An array containing user info from csv file
 	var $users_to_create = NULL; /// An array of users to create
@@ -51,6 +55,33 @@ class UploadUsers {
 	 */
 	function setNotification($notification) {
 		$this->notification = $notification;
+	}
+
+	/**
+	 * Set maximum number of records to import
+	 *
+	 * @param $limit int
+	 */
+	function setLimit($limit = 0) {
+		$this->limit = $limit;
+	}
+
+	/**
+	 * Set offset
+	 *
+	 * @param $offset int
+	 */
+	function setOffset($offset = 0) {
+		$this->offset = $offset;
+	}
+
+	/**
+	 * Set mapping tempalte
+	 *
+	 * @param $template str
+	 */
+	function setTemplate($template) {
+		$this->template = $template;
 	}
 
 	/**
@@ -104,7 +135,7 @@ class UploadUsers {
 			$headers[] = 'password';
 		}
 		/// Add status column to the headers
-		$headers[] = 'status';
+		$headers[] = 'upload_users_status';
 
 
 		$this->headers = $headers;
@@ -121,7 +152,17 @@ class UploadUsers {
 		$users = array();
 
 		/// Go through the user rows
-		for ($i = 1; $i < count($rows); $i++) {
+		if ($this->limit <= 0) {
+			$end = count($rows) - $this->offset;
+		} else {
+			$end = $this->limit + $this->offset + 1;
+		}
+
+		if ($end > count($rows)) {
+			$end = count($rows);
+		}
+
+		for ($i = $this->offset + 1; $i < $end; $i++) {
 			$rows[$i] = trim($rows[$i]);
 			if (empty($rows[$i])) {
 				continue;
@@ -164,22 +205,23 @@ class UploadUsers {
 				$user['password'] = $this->generatePassword();
 			}
 
-			$report = array('username' => $user['username'],
+			$report = array(
+				'username' => $user['username'],
 				'password' => $user['password'],
 				'name' => $user['name'],
 				'email' => $user['email'],
-				'status' => '',
+				'upload_users_status' => '',
 				'create_user' => true);
 
 			/// Check if the username has already been registered
 			if (get_user_by_username($user['username'])) {
-				$report['status'] .= '<span class="error">' . elgg_echo('registration:userexists') . '</span>';
+				$report['upload_users_status'] .= '<span class="error">' . elgg_echo('registration:userexists') . '</span>';
 				$report['create_user'] = false;
 			}
 
 			/// Check if the email has already been registered
 			if (get_user_by_email($user['email'])) {
-				$report['status'] .= '<span class="error">' . elgg_echo('registration:dupeemail') . '</span>';
+				$report['upload_users_status'] .= '<span class="error">' . elgg_echo('registration:dupeemail') . '</span>';
 				$report['create_user'] = false;
 			}
 
@@ -187,7 +229,7 @@ class UploadUsers {
 			try {
 				validate_email_address($user['email']);
 			} catch (RegistrationException $r) {
-				$report['status'] .= ' <span class="error">' . $r->getMessage() . '</span>';
+				$report['upload_users_status'] .= ' <span class="error">' . $r->getMessage() . '</span>';
 				$report['create_user'] = false;
 			}
 
@@ -195,7 +237,7 @@ class UploadUsers {
 			try {
 				validate_password($user['password']);
 			} catch (RegistrationException $r) {
-				$report['status'] .= ' <span class="error">' . $r->getMessage() . '</span>';
+				$report['upload_users_status'] .= ' <span class="error">' . $r->getMessage() . '</span>';
 				$report['create_user'] = false;
 			}
 
@@ -206,8 +248,8 @@ class UploadUsers {
 			}
 
 			/// Add the user to the creation list if we can create the user
-			if ($report['status'] == '') {
-				$report['status'] = elgg_echo('upload_users:statusok'); /// Set status to ok
+			if ($report['upload_users_status'] == '') {
+				$report['upload_users_status'] = elgg_echo('upload_users:statusok'); /// Set status to ok
 				$this->users_to_create[] = $user;
 			} else {
 				$this->number_of_failed_users++;
@@ -238,6 +280,12 @@ class UploadUsers {
 		}
 		$this->headers = $mapped_headers;
 
+		if ($this->template) {
+			$templates = json_decode(elgg_get_plugin_setting('templates', 'upload_users'));
+			$templates[] = $this->template;
+			elgg_set_plugin_setting('templates', json_encode($templates), 'upload_users');
+			elgg_set_plugin_setting($this->template, json_encode($mapped_headers), 'upload_users');
+		}
 		/// Create the users from the $users array
 		for ($i = 0; $i < $post_data['num_of_users']; $i++) {
 			$user = array();
@@ -306,7 +354,7 @@ class UploadUsers {
 					}
 
 					/// Add status message to the report
-					$report['status'] = elgg_echo('upload_users:success');
+					$report['upload_users_status'] = elgg_echo('upload_users:success');
 
 					/// Send an email to the user if this was needed
 					if ($this->notification) {
@@ -317,7 +365,7 @@ class UploadUsers {
 				}
 			} catch (RegistrationException $r) {
 				//register_error($r->getMessage());
-				$report['status'] = '<span class="error">' . $r->getMessage() . '</span>';
+				$report['upload_users_status'] = '<span class="error">' . $r->getMessage() . '</span>';
 				$report['password'] = ''; /// Reset password in failed cases
 				$this->number_of_failed_users++;
 			}
@@ -344,12 +392,17 @@ class UploadUsers {
 	 * @return unknown_type
 	 */
 	public function getConfirmationReport() {
-		$data = array('headers' => $this->headers,
+		$data = array(
+			'headers' => $this->headers,
 			'report' => $this->confirmation_report,
 			'num_of_failed' => $this->number_of_failed_users,
 			'notification' => $this->notification,
 			'delimiter' => $this->delimiter,
-			'encoding' => $this->encoding);
+			'encoding' => $this->encoding,
+			'limit' => $this->limit,
+			'offset' => $this->offset,
+			'template' => $this->template
+		);
 		$return = elgg_view('upload_users/confirmation_report', $data);
 
 		return $return;

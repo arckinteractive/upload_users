@@ -31,10 +31,37 @@ echo elgg_view('input/dropdown', array('options' => $options, 'name' => 'encodin
 echo '<br />';
 
 /// Display delimiter pull down
-$options = array(',', ';', ':', '|');
+$options = array(',', ';', ':', '|', '||');
 echo '<h4>' . elgg_echo('upload_users:delimiter') . '</h4>';
 echo elgg_view('input/dropdown', array('options' => $options, 'name' => 'delimiter'));
 echo '<br />';
+
+echo '<h4>' . elgg_echo('upload_users:record_limit') . '</h4>';
+echo elgg_view('input/text', array('name' => 'limit', 'value' => 0));
+echo '<br />';
+
+echo '<h4>' . elgg_echo('upload_users:record_offset') . '</h4>';
+echo elgg_view('input/text', array('name' => 'offset', 'value' => 0));
+echo '<br />';
+
+$templates = elgg_get_plugin_setting('templates', 'upload_users');
+
+if (!$templates) {
+	$templates = array();
+} else {
+	$templates = json_decode($templates);
+}
+
+array_unshift($templates, 'new');
+
+echo '<h4>' . elgg_echo('upload_users:mapping_template') . '</h4>';
+echo elgg_view('input/dropdown', array(
+	'name' => 'template',
+	'options' => $templates
+));
+echo '<br />';
+
+
 
 /// Display send emails pull down
 $options = array('1' => elgg_echo('upload_users:yes'), '0' => elgg_echo('upload_users:no'));
