@@ -13,9 +13,10 @@
  * @link http://arckinteractive.com/
  */
 
+elgg_register_event_handler('init', 'system', 'upload_users_init', 1);
+
 /**
- * Profile init function; sets up the upload_users functions
- *
+ * Initialize upload users on system init
  */
 function upload_users_init() {
 
@@ -38,18 +39,38 @@ function upload_users_init() {
 	}
 }
 
-// Make sure the profile initialisation function is called on initialisation
-elgg_register_event_handler('init', 'system', 'upload_users_init', 1);
-
+/**
+ * Set user role upon import
+ *
+ * @global array $UPLOAD_USERS_ROLES_CACHE Cache roles
+ * @param string $hook Equals 'header:custom_method'
+ * @param string $type Equals 'upload_users'
+ * @param boolean $return Return flag received by the hook
+ * @param array $params An array of additional hook parameters
+ * @return boolean If true, the upload script will not attempt to store the value as metadata
+ */
 function upload_users_set_role($hook, $type, $return, $params) {
+
+	if (!elgg_is_active_plugin('roles')) {
+		return $return;
+	}
+
 	$header = $params['header'];
 	$user = $params['user'];
 	$value = $params['value'];
 
-	if ($header == 'user_upload_role') {
-		$role = roles_get_role_by_name($value);
-		roles_set_role($role, $user);
-		return true;
+	global $UPLOAD_USERS_ROLES_CACHE;
+
+	if (elgg_instanceof($user, 'user') && $header == 'user_upload_role' && $value) {
+		if (!isset($UPLOAD_USERS_ROLES_CACHE[$value])) {
+			$role = roles_get_role_by_name($value);
+			if ($role) {
+				$UPLOAD_USERS_ROLES_CACHE[$value] = $role;
+			}
+		} else {
+			$role = $UPLOAD_USERS_ROLES_CACHE[$value];
+		}
+		return roles_set_role($role, $user);
 	}
 
 	return $return;
