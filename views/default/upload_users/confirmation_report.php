@@ -10,7 +10,8 @@
  */
 $headers = $vars['headers'];
 $report = $vars['report'];
-
+$failures = $vars['failures'];
+echo '<form action="' . elgg_get_site_url() . 'action/upload_users/upload' . '" method="POST">';
 if (elgg_is_active_plugin('profile_manager')) {
 	$options = array(
 		'type' => 'object',
@@ -178,7 +179,7 @@ echo elgg_view('input/text', array('name' => 'template', 'value' => $vars['templ
 ?>
 <?php echo elgg_view('input/securitytoken') ?>
 <?php echo elgg_view('input/submit', array('value' => elgg_echo('upload_users:create_users'))); ?>
-
+</form>
 <script type="text/javascript">
 	$(document).ready(function() {
 		$('select[name^=header]').change(function() {
@@ -190,3 +191,96 @@ echo elgg_view('input/text', array('name' => 'template', 'value' => $vars['templ
 		});
 	})
 </script>
+
+<div style="background-color: red; color: white; font-weight: bold; padding: 20px;">Errors</div>
+
+
+<div class="creation_report_wrapper">
+	<table id="creation_report">
+		<thead>
+			<?php
+			if (is_array($role_options)) {
+				echo '<td>';
+				echo elgg_echo('role');
+				echo elgg_view('input/hidden', array(
+					'name' => 'header[user_upload_role][mapping]',
+					'value' => 'role'
+				));
+				echo '</td>';
+			}
+			/// Print the headers
+			foreach ($headers as $header) {
+				echo '<td>';
+				if ($header == 'status') {
+					echo elgg_view('input/hidden', array(
+					'name' => 'header[status][mapping]',
+					'value' => 'status'
+					));
+					continue;
+				}
+				if (is_array($mapping_options)) {
+					if (array_key_exists($header, $mapping_options)) {
+						$mapping_value = $header;
+						$custom_input_class = 'hidden';
+					} else {
+						$mapping_value = null;
+						$custom_input_class = '';
+					}
+					echo elgg_view('input/dropdown', array(
+						'name' => "header[$header][mapping]",
+						'options_values' => $mapping_options,
+						'value' => $mapping_value
+					));
+
+					echo elgg_view('input/text', array(
+						'name' => "header[$header][custom]",
+						'value' => $header,
+						'class' => $custom_input_class
+					));
+				} else {
+					echo elgg_view('input/hidden', array(
+						'name' => "header[$header][mapping]",
+						'value' => "custom"
+					));
+
+					echo elgg_view('input/text', array(
+						'name' => "header[$header][custom]",
+						'value' => $header
+					));
+				}
+				echo '</td>';
+			}
+			?>
+		</thead>
+
+		<?php
+/// Print the data
+		for ($i = 0; $i < count($failures); $i++) {
+			echo "<tr>";
+			if (is_array($role_options)) {
+				echo '<td>';
+				echo elgg_view('input/dropdown', array(
+					'name' => 'user_upload_role[]',
+					'value' => DEFAULT_ROLE,
+					'options_values' => $role_options
+				));
+				echo '</td>';
+			}
+
+			foreach ($headers as $header) {
+				echo '<td>';
+				if ($failures[$i]) {
+						if ($failures[$i][$header]) {
+                            echo $failures[$i][$header];
+                        }
+                        else {
+                            echo $failures[$i]['metadata'][$header];
+                        }
+				}
+				echo '</td>';
+			}
+			echo "</tr>";
+		}
+		?>
+	</table>
+</div>

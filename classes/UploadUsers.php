@@ -17,6 +17,7 @@ class UploadUsers {
 	var $raw_data;
 	var $confirmation_report;
 	var $creation_report;
+    var $failures;
 	var $headers;
 	var $mapped_headers;
 	var $template;
@@ -198,6 +199,7 @@ class UploadUsers {
 	function checkUsers() {
 		global $CONFIG;
 		$final_report = array(); /// Final report of the upload process
+        $failures = array();
 		/// Check all the users from $users_to_confirm array
 		foreach ($this->users_to_confirm as $user) {
 			/// CHeck for password or generate a new one
@@ -252,12 +254,15 @@ class UploadUsers {
 				$report['upload_users_status'] = elgg_echo('upload_users:statusok'); /// Set status to ok
 				$this->users_to_create[] = $user;
 			} else {
+                $user['status'] = $report['status'];
+                $failures[] = $user;
 				$this->number_of_failed_users++;
 			}
 
 			$final_report[] = $report;
 		}
 
+        $this->failures = $failures;
 		$this->confirmation_report = $final_report;
 		return true;
 	}
@@ -270,6 +275,7 @@ class UploadUsers {
 	function createUsers($post_data) {
 		global $CONFIG;
 		$final_report = array(); /// Final report of the creation process
+        $failures = array(); // report of users that couldn't be registered
 
 		foreach ($post_data['header'] as $header => $mapping) {
 			$metadata_name = $mapping['mapping'];
@@ -364,6 +370,12 @@ class UploadUsers {
 					}
 				}
 			} catch (RegistrationException $r) {
+                $fail = array();
+                foreach ($this->headers as $header => $metadata_name) {
+                    $fail[] = $user[$metadata_name];
+                }
+                $fail[] = $r->getMessage();
+                $failures[] = $fail;
 				//register_error($r->getMessage());
 				$report['upload_users_status'] = '<span class="error">' . $r->getMessage() . '</span>';
 				$report['password'] = ''; /// Reset password in failed cases
@@ -371,6 +383,7 @@ class UploadUsers {
 			}
 			$final_report[] = $report;
 		}
+        $this->failures = $failures;
 		$this->creation_report = $final_report;
 		return true;
 	}
@@ -381,7 +394,7 @@ class UploadUsers {
 	 * @return unknown_type
 	 */
 	public function getCreationReport() {
-		$data = array('headers' => $this->headers, 'report' => $this->creation_report, 'num_of_failed' => $this->number_of_failed_users);
+		$data = array('headers' => $this->headers, 'report' => $this->creation_report, 'num_of_failed' => $this->number_of_failed_users, 'failures' => $this->failures);
 
 		return elgg_view('upload_users/creation_report', $data);
 	}
@@ -401,8 +414,10 @@ class UploadUsers {
 			'encoding' => $this->encoding,
 			'limit' => $this->limit,
 			'offset' => $this->offset,
-			'template' => $this->template
-		);
+			'template' => $this->template,
+            'failures' => $this->failures
+				);
+
 		$return = elgg_view('upload_users/confirmation_report', $data);
 
 		return $return;
