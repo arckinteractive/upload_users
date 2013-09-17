@@ -1,12 +1,19 @@
 <?php
+
 /**
- * Elgg upload_users plugin language file
+ * Upload users language strings
+ * Finnish
  *
  * @package upload_users
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jaakko Naakka / Mediamaisteri Group
- * @copyright Mediamaisteri Group 2008-2009
+ * @author Ismayil Khayredinov / Arck Interactive
+ * @copyright Mediamaisteri Group 2009
+ * @copyright ArckInteractive 2013
  * @link http://www.mediamaisteri.com/
+ * @link http://arckinteractive.com/
+ *
+ * @author Juho Jaakkola
  */
 
 $finnish = array(

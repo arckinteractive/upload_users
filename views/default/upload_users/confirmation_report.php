@@ -5,8 +5,11 @@
  * @package upload_users
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jaakko Naakka / Mediamaisteri Group
+ * @author Ismayil Khayredinov / Arck Interactive
  * @copyright Mediamaisteri Group 2009
+ * @copyright ArckInteractive 2013
  * @link http://www.mediamaisteri.com/
+ * @link http://arckinteractive.com/
  */
 $headers = $vars['headers'];
 $report = $vars['report'];
@@ -213,8 +216,8 @@ echo elgg_view('input/text', array('name' => 'template', 'value' => $vars['templ
 				echo '<td>';
 				if ($header == 'status') {
 					echo elgg_view('input/hidden', array(
-					'name' => 'header[status][mapping]',
-					'value' => 'status'
+						'name' => 'header[status][mapping]',
+						'value' => 'status'
 					));
 					continue;
 				}
@@ -270,12 +273,11 @@ echo elgg_view('input/text', array('name' => 'template', 'value' => $vars['templ
 			foreach ($headers as $header) {
 				echo '<td>';
 				if ($failures[$i]) {
-						if ($failures[$i][$header]) {
-                            echo $failures[$i][$header];
-                        }
-                        else {
-                            echo $failures[$i]['metadata'][$header];
-                        }
+					if ($failures[$i][$header]) {
+						echo $failures[$i][$header];
+					} else {
+						echo $failures[$i]['metadata'][$header];
+					}
 				}
 				echo '</td>';
 			}
