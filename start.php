@@ -12,7 +12,6 @@
  * @link http://www.mediamaisteri.com/
  * @link http://arckinteractive.com/
  */
-
 elgg_register_event_handler('init', 'system', 'upload_users_init', 1);
 
 /**
@@ -59,19 +58,21 @@ function upload_users_set_role($hook, $type, $return, $params) {
 	$user = $params['user'];
 	$value = $params['value'];
 
-	global $UPLOAD_USERS_ROLES_CACHE;
-
-	if (elgg_instanceof($user, 'user') && $header == 'user_upload_role' && $value) {
-		if (!isset($UPLOAD_USERS_ROLES_CACHE[$value])) {
-			$role = roles_get_role_by_name($value);
-			if ($role) {
-				$UPLOAD_USERS_ROLES_CACHE[$value] = $role;
-			}
-		} else {
-			$role = $UPLOAD_USERS_ROLES_CACHE[$value];
-		}
-		return roles_set_role($role, $user);
+	if ($header != 'user_upload_role' || !$value || !elgg_instanceof($user, 'user')) {
+		return $return;
 	}
 
-	return $return;
+	global $UPLOAD_USERS_ROLES_CACHE;
+
+	if (!isset($UPLOAD_USERS_ROLES_CACHE[$value])) {
+		$role = roles_get_role_by_name($value);
+		if ($role) {
+			$UPLOAD_USERS_ROLES_CACHE[$value] = $role;
+		}
+	} else {
+		$role = $UPLOAD_USERS_ROLES_CACHE[$value];
+	}
+
+
+	return roles_set_role($role, $user);
 }
