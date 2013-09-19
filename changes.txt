@@ -8,5 +8,6 @@
 
 1.8.2
 - Modifies: use fgestcsv for CSV parsing
+- Modifies: store uploaded files on Elgg's filestore and use file entities to store upload related metadata
 - Adds: more charset options
 - Improves: better UI

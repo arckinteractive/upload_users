@@ -15,54 +15,27 @@
 ?>
 
 
-	.upload_users_container {
-		margin-left: 10px;
+.upload-users-mapping td {
+	padding:10px;
+}
 
-	}
+.upload-users-mapping input,
+.upload-users-mapping select,
+.upload-users-attributes select {
+	display:inline-block;
+	vertical-align:middle;
+	max-width:250px;
+	padding:4px 8px;
+	line-height:20px;
+}
 
-	.creation_report_wrapper {
-		width:100%;
-		overflow:auto;
-	}
+.upload-users-success {
+	background: #99cc99;
+}
 
-	#creation_report {
-		margin: 10px 10px 10px 10px;
-		background-color: white;
-		width: auto;
-		border: 1px dotted black;
-	}
-
-	#creation_report input {
-		font-size:11px;
-		line-height:12px;
-		padding:2%;
-		margin:2%;
-		width:90%;
-	}
-
-	#creation_report td {
-		padding: 3px 3px 3px 3px;
-		border: 1px dotted black;
-	}
-
-	#creation_report thead td {
-		background-color: gray;
-		font-size: 11px;
-		font-weight: bold;
-	}
-
-	.error {
-		color: red;
-		font-weight: bold;
-	}
-
-	.code {
-		font-family: courier;
-	}
-
-	.hidden {
-		display:none;
-	}
+.upload-users-error {
+	background: #fcc;
+}
 
 <?php if (FALSE) : ?></style><?php
  endif; ?>
