@@ -116,16 +116,18 @@ class UploadUsers {
 	 */
 	function mapRecord($record) {
 
+		// Set required keys
 		$mapped_record = array(
 			'__upload_users_status' => array(),
 			'__upload_users_messages' => array(),
 			'guid' => null,
-			'username' => $this->getUsername($record),
-			'name' => $this->getName($record),
-			'email' => $this->getEmail($record),
-			'password' => $this->getPassword($record),
+			'email' => '',
+			'username' => '',
+			'name' => '',
+			'password' => '',
 		);
 
+		// Map values
 		$headers = $this->mapped_headers;
 		if ($headers) {
 			foreach ($headers as $original_header => $new_header) {
@@ -141,6 +143,12 @@ class UploadUsers {
 				$mapped_record[$key] = $value;
 			}
 		}
+
+		// Map required values
+		$mapped_record['username'] = $this->getUsername($record);
+		$mapped_record['name'] = $this->getName($record);
+		$mapped_record['email'] = $this->getEmail($record);
+		$mapped_record['password'] = $this->getPassword($record);
 
 		return $mapped_record;
 	}
