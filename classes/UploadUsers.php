@@ -362,7 +362,16 @@ class UploadUsers {
 						'user' => $user
 					);
 
-					if (elgg_trigger_plugin_hook('header:custom_method', 'upload_users', $hook_params, false)) {
+					$custom = array(
+						'messages' => array(),
+						'status' => false
+					);
+					
+					$custom = elgg_trigger_plugin_hook('header:custom_method', 'upload_users', $hook_params, $custom);
+					if (isset($custom['message'])) {
+						$record['__upload_users_messages'][] = $custom['message'];
+					}
+					if ($custom === true || $custom['status'] === true) {
 						continue;
 					}
 

@@ -182,8 +182,6 @@ function upload_users_set_role($hook, $type, $return, $params) {
 	if ($metadata_name != 'user_upload_role' || !$value || !elgg_instanceof($user, 'user')) {
 		return $return;
 	}
-
-	elgg_log("Upload users: assigning role $value to $user->guid");
 	
 	global $UPLOAD_USERS_ROLES_CACHE;
 
@@ -196,8 +194,10 @@ function upload_users_set_role($hook, $type, $return, $params) {
 		$role = $UPLOAD_USERS_ROLES_CACHE[$value];
 	}
 
+	$return['status'] = roles_set_role($role, $user);
+	elgg_log("Upload users: assigning role $value to $user->guid; Status: {$return['status']}");
 
-	return roles_set_role($role, $user);
+	return $return;
 }
 
 /**
