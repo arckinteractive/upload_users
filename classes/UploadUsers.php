@@ -366,10 +366,14 @@ class UploadUsers {
 						'messages' => array(),
 						'status' => false
 					);
-					
+
 					$custom = elgg_trigger_plugin_hook('header:custom_method', 'upload_users', $hook_params, $custom);
-					if (isset($custom['message'])) {
-						$record['__upload_users_messages'][] = $custom['message'];
+					if (isset($custom['messages'])) {
+						if (is_array($custom['messages'])) {
+							$record['__upload_users_messages'] = array_merge($record['__upload_users_messages'], $cutsom['messages']);
+						} else if (!empty($custom['messages'])) {
+							$record['__upload_users_messages'][] = $custom['messages'];
+						}
 					}
 					if ($custom === true || $custom['status'] === true) {
 						continue;
