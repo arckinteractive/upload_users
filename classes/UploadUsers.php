@@ -376,6 +376,9 @@ class UploadUsers {
 						}
 					}
 					if ($custom === true || $custom['status'] === true) {
+						if (isset($custom['value'])) {
+							$record[$metadata_name] = $metadata_value;
+						}
 						continue;
 					}
 
