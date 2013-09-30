@@ -1,4 +1,4 @@
-<?php
+	<?php
 
 $guid = get_input('guid');
 $file = get_entity($guid);
@@ -76,7 +76,7 @@ foreach ($report as $record) {
 		if (is_array($value)) {
 			$value = implode('<br />', $value);
 		}
-		$body .= '<td>' . $value . '</td>';
+		$body .= '<td>' . elgg_autop($value) . '</td>';
 	}
 	$body .= '</tr>';
 }
