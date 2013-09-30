@@ -370,7 +370,7 @@ class UploadUsers {
 					$custom = elgg_trigger_plugin_hook('header:custom_method', 'upload_users', $hook_params, $custom);
 					if (isset($custom['messages'])) {
 						if (is_array($custom['messages'])) {
-							$record['__upload_users_messages'] = array_merge($record['__upload_users_messages'], $cutsom['messages']);
+							$record['__upload_users_messages'] = array_merge($record['__upload_users_messages'], $custom['messages']);
 						} else if (!empty($custom['messages'])) {
 							$record['__upload_users_messages'][] = $custom['messages'];
 						}
