@@ -33,12 +33,16 @@ if (elgg_is_active_plugin('profile_manager')) {
 
 	if ($custom_fields) {
 		foreach ($custom_fields as $field) {
-			$option = $field->getTitle();
-			if ($category_guid = $field->category_guid) {
-				$category = get_entity($category_guid);
-				$option = "$option ({$category->getTitle()})";
+			if ($field instanceof ProfileManagerCustomField) {
+				$option = $field->getTitle();
+				if ($category_guid = $field->category_guid) {
+					$category = get_entity($category_guid);
+					if ($category instanceof ProfileManagerCustomFieldCategory) {
+						$option = "$option ({$category->getTitle()})";
+					}
+				}
+				$mapping_options[$field->metadata_name] = $option;
 			}
-			$mapping_options[$field->metadata_name] = $option;
 		}
 	}
 }
@@ -103,7 +107,7 @@ foreach ($headers as $header) {
 
 	$access_id = ACCESS_PRIVATE;
 	$value_type = 'text';
-	
+
 	if (isset($header_mapping[$header])) {
 		if (is_array($header_mapping[$header])) {
 			$mapping_value = $header_mapping[$header]['metadata_name'];
@@ -143,7 +147,7 @@ foreach ($headers as $header) {
 			'value' => $access_id
 		));
 	}
-	
+
 	echo '</td>';
 
 	echo '<td>';
