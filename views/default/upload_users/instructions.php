@@ -6,7 +6,7 @@ $title = elgg_echo('upload_users:instructions');
 $body = elgg_echo('upload_users:download_sample_help');
 $body .= elgg_view('output/url', array(
 	'text' => elgg_echo('upload_users:download_sample'),
-	'href' => 'upload_users/download/sample?limit=50&offset=0',
+	'href' => 'upload_users/sample?limit=50&offset=0',
 	'class' => 'elgg-button elgg-button-action mam'
 		));
 
