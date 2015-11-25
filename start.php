@@ -19,10 +19,7 @@ elgg_register_event_handler('upgrade', 'system', 'upload_users_upgrade_v1_8_2');
  * Initialize upload users on system init
  */
 function upload_users_init() {
-
 	$path = elgg_get_plugins_path() . 'upload_users/';
-
-	elgg_register_classes("{$path}classes/");
 
 	elgg_register_admin_menu_item('administer', 'upload', 'users');
 
