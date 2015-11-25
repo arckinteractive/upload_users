@@ -13,7 +13,7 @@
  * @link http://www.mediamaisteri.com/
  * @link http://arckinteractive.com/
  */
-$finnish = array(
+return array(
 	/**
 	 * Admin Interface
 	 */
@@ -162,5 +162,3 @@ $finnish = array(
 	'upload_users:error:invalid_guid' => 'Järjestelmästä ei löytynyt tiliä, jolla on tämä GUID',
 	'upload_users:error:update_email_username_mismatch' => 'Tiliä ei voida päivittää, koska tunnus ja sähköposti eivät täsmää',
 );
-
-add_translation('fi', $finnish);
