@@ -34,9 +34,6 @@ function upload_users_init() {
 	$css = elgg_get_simplecache_url('css', 'upload_users/css');
 	elgg_register_css('upload_users.css', $css);
 
-	$js = elgg_get_simplecache_url('js', 'upload_users/js');
-	elgg_register_js('upload_users.js', $js);
-
 	elgg_register_plugin_hook_handler('header:custom_method', 'upload_users', 'upload_users_set_role');
 
 	elgg_register_page_handler('upload_users', 'upload_users_page_handler');
@@ -182,7 +179,7 @@ function upload_users_set_role($hook, $type, $return, $params) {
 	if ($metadata_name != 'user_upload_role' || !$value || !elgg_instanceof($user, 'user')) {
 		return $return;
 	}
-	
+
 	global $UPLOAD_USERS_ROLES_CACHE;
 
 	if (!isset($UPLOAD_USERS_ROLES_CACHE[$value])) {
